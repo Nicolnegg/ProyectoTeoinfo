@@ -12,6 +12,8 @@ import sounddevice as sd
 import soundfile as sf
 from pydub import AudioSegment
 from pydub.playback import play
+from tkinter import ttk
+import customtkinter as ct
 
 cancion_actual = None
 
@@ -21,70 +23,51 @@ screen_width = user32.GetSystemMetrics(0)
 screen_height = user32.GetSystemMetrics(1)
 
 # Crear la ventana principal
-ventana = tk.Tk()
+ventana = ct.CTk()
 ventana.title("La nota correcta")
+ventana.configure(bg_color="white",fg_color="white")
 
-# Establecer el fondo blanco de la ventana principal
-ventana.configure(bg="white")
+
 
 
 # Cargar la fuente utilizando el módulo font
-fuente_personalizada = tkFont.Font(family="@DengXian", weight="normal", size=15)
+fuente_personalizada = ct.CTkFont(family="@DengXian", weight="normal", size=15)
+fuente_personalizada_bold = ct.CTkFont(family="@DengXian", weight="bold", size=15)
 
 
+marco_logo_titulo = ct.CTkFrame(ventana)
+marco_logo_titulo.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 20))  # Usamos 'sticky="ew"' para expandir el marco horizontalmente
+marco_logo_titulo.configure(bg_color="white" ,fg_color="white")
+ventana.rowconfigure(0, weight=1)  # Expande la primera fila verticalmente
 
-# Contenedor principal para el logo y el título
-contenedor_principal = tk.Frame(ventana)
-contenedor_principal.grid(row=0, column=0)
-contenedor_principal.configure(bg="white")
-
-# Crear un marco para contener el logo y el título
-marco_logo_titulo = tk.Frame(ventana)
-marco_logo_titulo.grid(row=0, column=0, columnspan=2)
-marco_logo_titulo.configure(bg="white")
+image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "imagenes")
 
 # Cargar y mostrar el logo
-logo = Image.open("imagenes/logo.png")
-logo_width = int(screen_width * 0.15)  # Ajustar el ancho del logo al 10% de la pantalla
-logo_height = int(logo_width * logo.size[1] / logo.size[0])  # Calcular la altura proporcional
-logo = logo.resize((logo_width, logo_height))
-logo = ImageTk.PhotoImage(logo)
-logo_label = tk.Label(marco_logo_titulo, image=logo)
-logo_label.pack(side=tk.LEFT)
-logo_label.configure(bg="white")
-
-# Cargar y mostrar el título como una imagen
-titulo = Image.open("imagenes/logoLetra.png")
-titulo_height = int(screen_height * 0.2)  # Ajustar la altura del título al 10% de la pantalla
-titulo_width = int(titulo_height * titulo.size[0] / titulo.size[1])  # Calcular el ancho proporcional
-titulo = titulo.resize((titulo_width, titulo_height))
-titulo = ImageTk.PhotoImage(titulo)
-titulo_label = tk.Label(marco_logo_titulo, image=titulo)
-titulo_label.pack(side=tk.LEFT)
-titulo_label.configure(bg="white")
-
-# Configurar el marco para que se ajuste al centro de la ventana
-marco_logo_titulo.grid_configure(padx=(screen_width - logo_width - titulo_width) // 2)
+logo = ct.CTkImage(Image.open(os.path.join(image_path, "logo.png")), size=(217, 137))
+logo_label = ct.CTkLabel(marco_logo_titulo, image=logo, text="")
+logo_label.pack(side=ct.LEFT)
 
 
-# Configurar el contenedor principal para que se expanda y se centre
-contenedor_principal.grid_rowconfigure(0, weight=1)
-contenedor_principal.grid_columnconfigure(0, weight=1)
-contenedor_principal.grid_columnconfigure(1, weight=1)
-contenedor_principal.grid_columnconfigure(2, weight=1)
+
+titulo = ct.CTkImage(Image.open(os.path.join(image_path, "logoLetra.png")), size=(664, 144))
+titulo_label = ct.CTkLabel(marco_logo_titulo,
+                               image=titulo,
+                               text="")
+titulo_label.pack(side=ct.LEFT)
+
 
 archivos_audio = [archivo for archivo in os.listdir("canciones") if archivo.endswith(".mp3")]  # Solo archivos .mp3 (puedes ajustarlo a tus necesidades)
 
-# Variable para almacenar la opción seleccionada
-opcion_seleccionada = tk.StringVar()
-opcion_seleccionada.set("Seleccione una cancion")
 
+# Definir una variable para almacenar el valor seleccionado
+opcion_seleccionada = ct.StringVar()
 
 
 # Función para manejar la selección de opción
-def seleccionar_opcion(*args):
-    opcion = opcion_seleccionada.get()
-    print("Opción seleccionada:", opcion)  # Puedes realizar las acciones que desees con la opción seleccionada
+def seleccionar_opcion(valor):
+    global opcion_seleccionada
+    opcion_seleccionada.set(valor)
+    print("Opción seleccionada:", opcion_seleccionada.get())  # Puedes realizar las acciones que desees con la opción seleccionada
     graficar_cancion()  # Llamar a la función graficar_cancion() cuando se seleccione una opción
 
 
@@ -130,45 +113,57 @@ def detener_cancion():
         cancion_actual = None
 
 # Crear el desplegable de opciones
-desplegable = tk.OptionMenu(ventana, opcion_seleccionada, *archivos_audio)
-desplegable.config(text="Elige una canción", font=fuente_personalizada)
-desplegable.grid(row=1, column=0,  padx=1, pady=4)
+desplegable = ct.CTkOptionMenu(ventana,values=["Selecciona una cancion"]+archivos_audio ,command=seleccionar_opcion,
+    font=fuente_personalizada_bold,
+    dropdown_font=fuente_personalizada,
+    fg_color="#FFA4A4",    # Fuente blanca\
+    button_color="red",
+    button_hover_color= "#9D0000",  
+    dropdown_fg_color="red",
+    dropdown_hover_color="#9D0000",
+    dropdown_text_color="white",
+    width=400,
+    height=35,
+    corner_radius=10,
+    text_color="white",
+)
+desplegable.grid(row=2, column=0, padx=1, pady=4)
 
-# Asociar la función de selección a la opción seleccionada
-opcion_seleccionada.trace("w", seleccionar_opcion)
 
 # Crear la figura y el lienzo
 fig = plt.Figure(figsize=(6, 4), dpi=100)
 canvas = FigureCanvasTkAgg(fig, master=ventana)
-canvas.get_tk_widget().grid(row=2, column=0,  padx=1, pady=4)
+canvas.get_tk_widget().grid(row=3, column=0,  padx=1, pady=4)
 
 # Crear y colocar el resto de los elementos utilizando grid
-sonido = tk.Button(ventana, text="Escucha la cancion antes de empezar",font=tkFont.Font(family="@DengXian", weight="normal", size=16),  command=sonar_cancion)
-sonido.grid(row=4, column=0,  padx=1, pady=4)
-# Personalizar el aspecto del botón
-sonido.config(
-    bg="white",     # Fondo azul
-    fg="red",    # Fuente blanca
-    bd=2,          # Ancho del borde
-    foreground="red",
-    width=40
-    
+sonido = ct.CTkButton(ventana, text="Escucha la cancion antes de empezar",font=fuente_personalizada,  command=sonar_cancion, 
+    bg_color="white",     # Fondo azul
+    fg_color="white",    # Fuente blanca
+    width=400,
+    height=35,
+    corner_radius=10,
+    text_color="red",
+    hover_color= "#9D0000",
+    border_color="red",
+    border_width= 2
 )
+sonido.grid(row=5, column=0,  padx=1, pady=4)
 
-boton = tk.Button(ventana, text="Inicia con tu intento",font=tkFont.Font(family="@DengXian", weight="bold", size=15),  command=sonar_cancion)
-boton.grid(row=5, column=0,  padx=1, pady=4)
-boton.config(
-    bg="white",     # Fondo azul
-    fg="red",    # Fuente blanca
-    bd=2,          # Ancho del borde
-    foreground="red",
-    width=40,
-    
+boton = ct.CTkButton(ventana, text="Inicia con tu intento",font=fuente_personalizada_bold,  command=sonar_cancion,
+    bg_color="white",     # Fondo azul
+    fg_color="red",    # Fuente blanca
+    width=400,
+    height=35,
+    corner_radius=10,
+    text_color="white",
+    hover_color= "#9D0000"            
 )
+boton.grid(row=6, column=0,  padx=1, pady=4)
+
 
 # Crear y colocar el resto de los elementos utilizando grid
-etiqueta = tk.Label(ventana, text="¡INTENTANDO!", font=fuente_personalizada)
-etiqueta.grid(row=1, column=1,  padx=1, pady=4)
+etiqueta = ct.CTkLabel(ventana, text="¡INTENTANDO!", font=fuente_personalizada)
+etiqueta.grid(row=2, column=1,  padx=1, pady=4)
 
 ventana.mainloop()
 
