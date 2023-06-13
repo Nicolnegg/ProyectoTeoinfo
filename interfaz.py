@@ -142,7 +142,7 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             # Incrementar el contador de muestras grabadas
             samples_recorded += frames
         else:
-            # Detener la grabación
+        # Detener la grabación
             stream.stop()
             actualizar_etiqueta("Inicia con tu intento")
 
@@ -151,11 +151,17 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             frecuencia_muestreo = 44100  # Ejemplo de frecuencia de muestreo
 
             # Datos de amplitud (suponiendo que están en una lista llamada "datos_amplitud")
-            datos_amplitud = y_data  # Aquí debes proporcionar tus propios datos de amplitud
+            datos_amplitud = y_data.astype(np.float32)  # Convertir a float32
+
+            # Escalar los datos de amplitud al rango [-1, 1]
+            datos_amplitud /= np.max(np.abs(datos_amplitud))
+
+            # Convertir los datos de amplitud al formato adecuado para exportar a MP3
+            datos_amplitud_bytes = (datos_amplitud * (2 ** 15 - 1)).astype(np.int16).tobytes()
 
             # Crear un objeto de audio a partir de los datos de amplitud y la frecuencia de muestreo
             audio = AudioSegment(
-                data=bytes(datos_amplitud),
+                data=datos_amplitud_bytes,
                 sample_width=2,  # Ancho de muestra en bytes
                 frame_rate=frecuencia_muestreo,
                 channels=1  # Número de canales (1 para mono, 2 para estéreo)
@@ -164,9 +170,9 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             # Guardar el audio en formato MP3
             audio.export("canciones/cancion_grabada.mp3", format="mp3")
 
-            cancion1 = "canciones/Pollitos.mp3"
-            cancion2 = "canciones/cancion_grabada.mp3"
 
+            cancion1 = "canciones/pollitos2.mp3"
+            cancion2 = "canciones/cancion_grabada.mp3"
 
             porcentaje_total(cancion1, cancion2)
 
