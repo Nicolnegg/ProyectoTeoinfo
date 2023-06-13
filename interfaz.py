@@ -17,6 +17,8 @@ from tkinter import ttk
 import customtkinter as ct
 import pygame
 
+from porcentaje import porcentaje_total
+
 # Obtener información sobre los dispositivos de audio disponibles
 devices = sd.query_devices()
 print(devices)  # Imprimir información sobre los dispositivos
@@ -143,6 +145,30 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             # Detener la grabación
             stream.stop()
             actualizar_etiqueta("Inicia con tu intento")
+
+            from pydub import AudioSegment
+
+            frecuencia_muestreo = 44100  # Ejemplo de frecuencia de muestreo
+
+            # Datos de amplitud (suponiendo que están en una lista llamada "datos_amplitud")
+            datos_amplitud = y_data  # Aquí debes proporcionar tus propios datos de amplitud
+
+            # Crear un objeto de audio a partir de los datos de amplitud y la frecuencia de muestreo
+            audio = AudioSegment(
+                data=bytes(datos_amplitud),
+                sample_width=2,  # Ancho de muestra en bytes
+                frame_rate=frecuencia_muestreo,
+                channels=1  # Número de canales (1 para mono, 2 para estéreo)
+            )
+
+            # Guardar el audio en formato MP3
+            audio.export("canciones/cancion_grabada.mp3", format="mp3")
+
+            cancion1 = "canciones/Pollitos.mp3"
+            cancion2 = "canciones/cancion_grabada.mp3"
+
+
+            porcentaje_total(cancion1, cancion2)
 
     # Iniciar la grabación del audio utilizando el micrófono seleccionado
     stream = sd.InputStream(callback=audio_callback, device=mic_index, channels=1, samplerate=sample_rate)
