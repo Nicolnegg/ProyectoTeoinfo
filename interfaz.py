@@ -19,7 +19,7 @@ import pygame
 
 # Obtener información sobre los dispositivos de audio disponibles
 devices = sd.query_devices()
-#print(devices)  # Imprimir información sobre los dispositivos
+print(devices)  # Imprimir información sobre los dispositivos
 
 # Índice del micrófono a utilizar
 mic_index = 1  # Actualiza el índice según el dispositivo deseado

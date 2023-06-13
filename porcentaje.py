@@ -64,11 +64,11 @@ def comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo):
             print(f"Intervalo {i+1}: No hay similitud.")
 
 # Ejemplo de uso
-cancion1 = "canciones/cancion1.mp3"
-cancion2 = "canciones/cancion2.mp3"
-duracion_intervalo = 3  # Duración del intervalo en segundos
+# cancion1 = "canciones/cancion1.mp3"
+# cancion2 = "canciones/cancion2.mp3"
+# duracion_intervalo = 3 # Duración del intervalo en segundos
 
-comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo)
+# comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo)
 
 
 
