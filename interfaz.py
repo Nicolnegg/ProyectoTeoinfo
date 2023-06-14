@@ -17,7 +17,7 @@ from tkinter import ttk
 import customtkinter as ct
 import pygame
 from notas import detectar_notas
-
+from porcentaje_notas import calcular_similitud
 
 
 # Obtener información sobre los dispositivos de audio disponibles
@@ -169,7 +169,7 @@ def porcentaje_total(cancion1, cancion2):
 
 
 def capture_audio(duration=10, sample_rate=44100, mic_index=1):
-    global x_data, y_data, current_time, samples_recorded,notas_usuario
+    global x_data, y_data, current_time, samples_recorded,notas_usuario,notas_cancion
     # Configuración de la gráfica
     fig2.clear()
     ax = fig2.add_subplot(111)
@@ -211,7 +211,7 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
     # Función de callback para capturar el audio
     def audio_callback(indata, frames, time, status):
-        global x_data, y_data, current_time, samples_recorded,notas_usuario
+        global x_data, y_data, current_time, samples_recorded,notas_usuario,notas_cancion
         if status:
             print(status)
 
@@ -242,12 +242,16 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             notas2.configure(state="normal")
             notas2.insert("0.0",text= texto_notas(notas_usuario))
             notas2.configure(state="disable")
-
-
+            porcentaje_en_notas = calcular_similitud(notas_cancion, notas_usuario)
+            
             cancion1 = "canciones/pollitos2.mp3"
             cancion2 = "canciones/cancion_grabada.wav"
-            total.configure(text=" TOTAL: " + str(porcentaje_total(cancion1,cancion2)) + " %")
+            porcentaje_real = porcentaje_total(cancion1,cancion2)
+            porcentaje_final= (porcentaje_en_notas + porcentaje_real)/2
+            porcentaje.configure(text=" Porcentaje cancion: " + str(round(porcentaje_real,2)) + " %"  + "  Porcentaje notas: " + str(round(porcentaje_en_notas,2)) + " %")
+            total.configure(text=" TOTAL: " + str(round(porcentaje_final,3)) + " %")
             calcular_porcentaje_similitud(cancion1,cancion2)
+
 
             
 
