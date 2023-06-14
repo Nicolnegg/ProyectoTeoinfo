@@ -44,11 +44,6 @@ def calcular_porcentaje_similitud(cancion1, cancion2):
     print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
 
 
-cancion1 = "canciones/pollitos2.mp3"
-cancion2 = "canciones/cancion_grabada.wav"
-
-calcular_porcentaje_similitud(cancion1, cancion2)
-
 def porcentaje_total(cancion1, cancion2):
     # Cargar las canciones con librosa
     audio1, sr1 = librosa.load(cancion1)
