@@ -4,12 +4,6 @@ import numpy as np
 from pydub import AudioSegment
 import scipy.io.wavfile as wav
 
-import numpy as np
-import librosa
-
-import numpy as np
-import librosa
-
 
 def calcular_porcentaje_similitud(cancion1, cancion2):
     # Cargar la canción 2 con librosa
