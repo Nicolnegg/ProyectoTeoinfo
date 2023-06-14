@@ -1,7 +1,7 @@
 import librosa
 import numpy as np
 
-cancion1 = "canciones/cancion2.mp3"
+cancion1 = "canciones/cancion1.mp3"
 cancion2 = "canciones/cancion2.mp3"
 
 def porcentaje_total(cancion1, cancion2):
@@ -16,15 +16,15 @@ def porcentaje_total(cancion1, cancion2):
     caracteristicas2 = librosa.feature.chroma_cqt(y=audio2, sr=sr2)
 
     # Calcular la distancia entre las características
-    distancia = np.linalg.norm(caracteristicas1 - caracteristicas2)
+    num_columnas = min(caracteristicas1.shape[1], caracteristicas2.shape[1])
+    distancia = np.linalg.norm(caracteristicas1[:, :num_columnas] - caracteristicas2[:, :num_columnas])
 
     # Calcular el porcentaje de similitud
-    max_distancia = np.linalg.norm(np.ones_like(caracteristicas1))
+    max_distancia = np.linalg.norm(np.ones_like(caracteristicas1[:, :num_columnas]))
     porcentaje_similitud = (1 - distancia / max_distancia) * 100
 
     # Mostrar el resultado
     print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
-
 
 
 def comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo):
@@ -64,11 +64,8 @@ def comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo):
             print(f"Intervalo {i+1}: No hay similitud.")
 
 # Ejemplo de uso
-# cancion1 = "canciones/cancion1.mp3"
-# cancion2 = "canciones/cancion2.mp3"
+cancion1 = "canciones/cancion1.mp3"
+cancion2 = "canciones/cancion2.mp3"
 # duracion_intervalo = 3 # Duración del intervalo en segundos
-
-# comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo)
-
 
 
