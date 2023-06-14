@@ -160,6 +160,11 @@ def porcentaje_total(cancion1, cancion2):
     max_distancia = np.linalg.norm(np.ones_like(caracteristicas1[:, :num_columnas]))
     porcentaje_similitud = (1 - distancia / max_distancia) * 100
 
+    print(porcentaje_similitud)
+    if porcentaje_similitud >= 55:
+        porcentaje_similitud += 30
+    else:
+        porcentaje_similitud -= 30
     # Mostrar el resultado
     return ( porcentaje_similitud)
 
