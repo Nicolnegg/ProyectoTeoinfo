@@ -16,8 +16,6 @@ from pydub.playback import play
 from tkinter import ttk
 import customtkinter as ct
 import pygame
-
-
 from porcentaje import porcentaje_total
 from porcentaje import calcular_porcentaje_similitud
 # Obtener información sobre los dispositivos de audio disponibles
