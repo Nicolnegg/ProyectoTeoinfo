@@ -1,47 +1,41 @@
 import librosa
-import matplotlib.pyplot as plt
 import numpy as np
+import pretty_midi
 
-# Cargar la canción de piano
-song, sr = librosa.load('canciones/Pollitos.mp3')
+def detectar_notas(cancion):
+    notas_tocadas = []
+    
+    # Cargar el archivo de audio utilizando librosa
+    audio, sr = librosa.load(cancion)
+    
+    # Convertir el audio a cromagrama
+    cromagrama = librosa.feature.chroma_cqt(y=audio, sr=sr)
+    
+    # Calcular la magnitud del espectrograma
+    espectrograma = np.abs(librosa.stft(audio))
+    
+    # Detectar los onsets (puntos de inicio de cada nota)
+    onsets = librosa.onset.onset_detect(y=audio, sr=sr)
+    
+    for onset in onsets:
+        # Obtener la columna correspondiente al onset en el cromagrama
+        columna_cromagrama = cromagrama[:, onset]
+        
+        # Encontrar la nota más prominente en el cromagrama
+        indice_max = np.argmax(columna_cromagrama)
+        frecuencia = librosa.midi_to_hz(indice_max)
+        nota_midi = librosa.hz_to_midi(frecuencia)
+        nota = pretty_midi.note_number_to_name(nota_midi)
+        notas_tocadas.append(nota)
+    
+    return notas_tocadas
 
-# Convertir la señal de audio a mono
-song_mono = librosa.to_mono(song)
 
-# Calcular el espectro de frecuencia
-spectrum = librosa.stft(song_mono)
-magnitude = np.abs(spectrum)
-magnitude = np.max(magnitude, axis=0)
-print(len(magnitude))
+# Coloca el nombre de tu archivo de música aquí
+cancion_mp3 = "canciones/Pollitos2.mp3"
 
-# Encontrar los picos de frecuencia
-peak_indices = librosa.util.peak_pick(magnitude, pre_max=10, post_max=10, pre_avg=30, post_avg=50, delta=0.2, wait=0)
-print(peak_indices)
+notas_tocadas = detectar_notas(cancion_mp3)
 
-
-
-
-# Asociar los picos de frecuencia con las notas del piano
-note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-note_midi = [librosa.note_to_midi(note) for note in note_names]
-note_frequencies = librosa.midi_to_hz(note_midi)
-
-# Encontrar los picos de frecuencia
-frequencies = librosa.core.fft_frequencies(sr=sr, n_fft=len(magnitude))
-
-# Generar un nuevo vector de frecuencias para las notas del piano
-frequencies_resized = np.resize(frequencies, len(peak_indices))
-print(len(frequencies))
-
-notes_detected = []
-for peak_index in peak_indices:
-    closest_note = None
-    min_distance = float('inf')
-    for note_index, note_freq in enumerate(note_frequencies):
-        distance = np.abs(note_freq - frequencies_resized[peak_index])
-        if distance < min_distance:
-            min_distance = distance
-            closest_note = note_names[note_index]
-    notes_detected.append(closest_note)
-
-print("Notas detectadas:", notes_detected)
+print("Notas detectadas:")
+for nota in notas_tocadas:
+    print(nota)
