@@ -16,9 +16,6 @@ from pydub.playback import play
 from tkinter import ttk
 import customtkinter as ct
 import pygame
-from porcentaje import porcentaje_total
-from porcentaje import calcular_porcentaje_similitud
-from porcentaje import calcular_similitud_correlacion
 
 # Obtener información sobre los dispositivos de audio disponibles
 devices = sd.query_devices()
@@ -32,6 +29,7 @@ duration = 1  # Duración de la grabación en segundos
 
 cancion_actual = None
 sonando = False
+paso =0
 
 # Obtener las dimensiones de la pantalla
 user32 = ctypes.windll.user32
@@ -142,6 +140,7 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
             # Incrementar el contador de muestras grabadas
             samples_recorded += frames
+            
         else:
         # Detener la grabación
             
@@ -159,9 +158,6 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             cancion1 = "canciones/pollitos2.mp3"
             # cancion2 = "canciones/cancion_grabada.mp3"
 
-            porcentaje_total(cancion1, archivo_audio)
-            calcular_porcentaje_similitud(cancion1, archivo_audio )
-            calcular_similitud_correlacion(cancion1, archivo_audio)
 
     # Iniciar la grabación del audio utilizando el micrófono seleccionado
     stream = sd.InputStream(callback=audio_callback, device=mic_index, channels=1, samplerate=sample_rate)
@@ -182,7 +178,7 @@ def seleccionar_opcion(valor):
 
 
 def graficar_cancion():
-    global duration
+    global duration,paso
     # Ruta al archivo de audio .mp3
     archivo_mp3 = "canciones/" + opcion_seleccionada.get()
     
@@ -207,7 +203,8 @@ def graficar_cancion():
 
     # Establecer los límites del eje x
     ax.set_xlim(0, duracion)
-
+    progressbar.set(0)
+    paso = (duration/100)/100 # estableco el paso
     canvas.draw()
 
 def sonar_cancion():
@@ -305,6 +302,7 @@ progressbar = ct.CTkProgressBar(ventana, orientation="horizontal",
     progress_color = "red",
 )
 progressbar.grid(row=4, column=1,  padx=1, pady=4)
+
 
 # Crear y colocar el resto de los elementos utilizando grid
 porcentaje = ct.CTkButton(ventana, text="Porcentaje de acierto:", font=fuente_personalizada_bold, 
