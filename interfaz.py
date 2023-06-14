@@ -16,7 +16,8 @@ from pydub.playback import play
 from tkinter import ttk
 import customtkinter as ct
 import pygame
-
+from porcentaje import porcentaje_total
+from porcentaje import calcular_porcentaje_similitud
 # Obtener información sobre los dispositivos de audio disponibles
 devices = sd.query_devices()
 print(devices)  # Imprimir información sobre los dispositivos
@@ -156,7 +157,8 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             cancion1 = "canciones/pollitos2.mp3"
             # cancion2 = "canciones/cancion_grabada.mp3"
 
-            
+            print("porcentaje 1: ", porcentaje_total(cancion1, archivo_audio))
+            print("porcentaje 2: ",calcular_porcentaje_similitud(cancion1, archivo_audio ))
 
     # Iniciar la grabación del audio utilizando el micrófono seleccionado
     stream = sd.InputStream(callback=audio_callback, device=mic_index, channels=1, samplerate=sample_rate)
