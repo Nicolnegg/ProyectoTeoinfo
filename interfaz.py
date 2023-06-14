@@ -165,6 +165,8 @@ def porcentaje_total(cancion1, cancion2):
         porcentaje_similitud += 30
     else:
         porcentaje_similitud -= 30
+    if (porcentaje_similitud >100):
+        porcentaje_similitud=100
     # Mostrar el resultado
     return ( porcentaje_similitud)
 
