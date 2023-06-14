@@ -33,6 +33,9 @@ duration = 1  # Duración de la grabación en segundos
 cancion_actual = None
 sonando = False
 
+notas_cancion=[]
+notas_usuario=[]
+
 # Obtener las dimensiones de la pantalla
 user32 = ctypes.windll.user32
 screen_width = user32.GetSystemMetrics(0)
@@ -174,7 +177,7 @@ def porcentaje_total(cancion1, cancion2):
 
 
 def capture_audio(duration=10, sample_rate=44100, mic_index=1):
-    global x_data, y_data, current_time, samples_recorded,paso,paso_total
+    global x_data, y_data, current_time, samples_recorded,notas_usuario
     # Configuración de la gráfica
     fig2.clear()
     ax = fig2.add_subplot(111)
@@ -216,7 +219,7 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
     # Función de callback para capturar el audio
     def audio_callback(indata, frames, time, status):
-        global x_data, y_data, current_time, samples_recorded,paso,paso_total
+        global x_data, y_data, current_time, samples_recorded,notas_usuario
         if status:
             print(status)
 
@@ -243,12 +246,19 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             # Guardar el audio en formato WAV en lugar de MP3
             sf.write(archivo_audio, y_data, sample_rate, subtype='PCM_16')
 
+            notas_usuario = detectar_notas("canciones/cancion_grabada.wav")
+            notas1.configure(state="normal")
+            notas1.insert("0.0",text= texto_notas(notas_usuario))
+            notas1.configure(state="disable")
+
 
             cancion1 = "canciones/pollitos2.mp3"
             cancion2 = "canciones/cancion_grabada.mp3"
             porcentaje_total(cancion1,cancion2)
             calcular_porcentaje_similitud(cancion1,cancion2)
             calcular_similitud_correlacion(cancion1,cancion2)
+
+            
 
 
     # Iniciar la grabación del audio utilizando el micrófono seleccionado
@@ -270,7 +280,7 @@ def seleccionar_opcion(valor):
 
 
 def graficar_cancion():
-    global duration,paso
+    global duration,notas_cancion
     # Ruta al archivo de audio .mp3
     archivo_mp3 = "canciones/" + opcion_seleccionada.get()
     
@@ -297,8 +307,10 @@ def graficar_cancion():
     ax.set_xlim(0, duracion)
     progressbar.set(0)
     canvas.draw()
-    notas = detectar_notas(archivo_mp3)
-    notas1.configure(text= texto_notas(notas))
+    notas_cancion = detectar_notas(archivo_mp3)
+    notas1.configure(state="normal")
+    notas1.insert("0.0",text= texto_notas(notas_cancion))
+    notas1.configure(state="disable")
 
 def texto_notas(notas):
     # Variable para realizar el seguimiento del contador
@@ -401,20 +413,22 @@ boton = ct.CTkButton(ventana, text="Inicia con tu intento",font=fuente_personali
     height=35,
     corner_radius=10,
     text_color="white",
-    hover_color= "#9D0000"            
+    hover_color= "#9D0000"           
 )
 boton.grid(row=6, column=0,  padx=1, pady=4)
 
 # Crear y colocar el resto de los elementos utilizando grid
-notas1 = ct.CTkTextbox(ventana, font=fuente_notas, state="disabled",
+notas1 = ct.CTkTextbox(ventana, font=fuente_notas, state= "disable",
     fg_color="#FFA4A4",    # Fuente blanca
     width=400,
     height=200,
     corner_radius=10,
     text_color="white",
+    scrollbar_button_color = "red",
+    scrollbar_button_hover_color =  "#9D0000",
 
 )
-notas1.grid(row=8, column=0, padx=1, pady=4)
+notas1.grid(row=8, column=0, padx=1, pady=(4,20))
 
 
 # Crear y colocar el resto de los elementos utilizando grid
@@ -456,6 +470,18 @@ total = ct.CTkLabel(ventana, text="TOTAL:", font=fuente_personalizada_bold,
 
 )
 total.grid(row=6, column=1,  padx=1, pady=4)
+# Crear y colocar el resto de los elementos utilizando grid
+notas2 = ct.CTkTextbox(ventana, font=fuente_notas, state= "disable",
+    fg_color="#FFA4A4",    # Fuente blanca
+    width=400,
+    height=200,
+    corner_radius=10,
+    text_color="white",
+    scrollbar_button_color = "red",
+    scrollbar_button_hover_color =  "#9D0000",
+
+)
+notas2.grid(row=8, column=1, padx=1, pady=(4,20))
 
 
 
