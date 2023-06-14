@@ -297,6 +297,12 @@ fig2 = plt.Figure(figsize=(6, 4), dpi=100)
 canvas2 = FigureCanvasTkAgg(fig2, master=ventana)
 canvas2.get_tk_widget().grid(row=3, column=1, padx=1, pady=4)
 
+progressbar = ct.CTkProgressBar(ventana, orientation="horizontal",
+    width=400,
+    progress_color = "red",
+)
+progressbar.grid(row=4, column=1,  padx=1, pady=4)
+
 # Crear y colocar el resto de los elementos utilizando grid
 porcentaje = ct.CTkButton(ventana, text="Porcentaje de acierto:", font=fuente_personalizada_bold, 
     fg_color="white",    # Fuente blanca
