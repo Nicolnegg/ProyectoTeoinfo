@@ -117,32 +117,24 @@ def calcular_similitud_correlacion(cancion1, cancion2):
     print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
 
 def calcular_porcentaje_similitud(cancion1, cancion2):
-    # Cargar la canción 2 con librosa
+        # Cargar las canciones con librosa
+    audio1, sr1 = librosa.load(cancion1)
     audio2, sr2 = librosa.load(cancion2)
 
-    # Cargar la canción 1 con librosa y convertirla a mono
-    audio1, sr1 = librosa.load(cancion1, mono=True)
+    # Extraer los coeficientes cepstrales de frecuencia mel (MFCC)
+    mfcc1 = librosa.feature.mfcc(y=audio1, sr=sr1)
+    mfcc2 = librosa.feature.mfcc(y=audio2, sr=sr2)
 
-    # Alinear las longitudes de las señales de audio
-    min_len = min(len(audio1), len(audio2))
-    audio1 = audio1[:min_len]
-    audio2 = audio2[:min_len]
+    # Asegurarse de que los MFCC tengan la misma longitud
+    len_diff = mfcc1.shape[1] - mfcc2.shape[1]
+    if len_diff > 0:
+        mfcc1 = mfcc1[:, :mfcc2.shape[1]]
+    elif len_diff < 0:
+        mfcc2 = mfcc2[:, :mfcc1.shape[1]]
 
-    # Aplicar la transformada de Fourier a las señales de audio
-    fft1 = np.fft.fft(audio1)
-    fft2 = np.fft.fft(audio2)
-
-    # Calcular las magnitudes de las frecuencias
-    magnitudes1 = np.abs(fft1)
-    magnitudes2 = np.abs(fft2)
-
-    # Normalizar las magnitudes
-    magnitudes1 /= np.max(magnitudes1)
-    magnitudes2 /= np.max(magnitudes2)
-
-    # Calcular la similitud basada en las magnitudes de las frecuencias
-    distancia = np.linalg.norm(magnitudes1 - magnitudes2)
-    max_distancia = np.linalg.norm(np.ones_like(magnitudes1))
+    # Calcular la distancia entre los MFCC
+    distancia = np.linalg.norm(mfcc1 - mfcc2)
+    max_distancia = np.linalg.norm(np.ones_like(mfcc1))
     porcentaje_similitud = (1 - distancia / max_distancia) * 100
 
 
@@ -253,10 +245,9 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
 
             cancion1 = "canciones/pollitos2.mp3"
-            cancion2 = "canciones/cancion_grabada.mp3"
+            cancion2 = "canciones/cancion_grabada.wav"
             porcentaje_total(cancion1,cancion2)
             calcular_porcentaje_similitud(cancion1,cancion2)
-            calcular_similitud_correlacion(cancion1,cancion2)
 
             
 
