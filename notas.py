@@ -2,6 +2,7 @@ import librosa
 import numpy as np
 import pretty_midi
 
+
 def detectar_notas(cancion):
     notas_tocadas = []
     
