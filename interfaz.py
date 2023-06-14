@@ -27,7 +27,7 @@ print(devices)  # Imprimir información sobre los dispositivos
 mic_index = 1  # Actualiza el índice según el dispositivo deseado
 
 # Configuración de la grabación
-duration = 10  # Duración de la grabación en segundos
+duration = 1  # Duración de la grabación en segundos
 
 cancion_actual = None
 sonando = False
@@ -143,38 +143,22 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             samples_recorded += frames
         else:
         # Detener la grabación
+            
             stream.stop()
             actualizar_etiqueta("Inicia con tu intento")
+            import soundfile as sf
 
-            from pydub import AudioSegment
+            # Ruta de archivo para guardar el audio
+            archivo_audio = "canciones/cancion_grabada.wav"
 
-            frecuencia_muestreo = 44100  # Ejemplo de frecuencia de muestreo
-
-            # Datos de amplitud (suponiendo que están en una lista llamada "datos_amplitud")
-            datos_amplitud = y_data.astype(np.float32)  # Convertir a float32
-
-            # Escalar los datos de amplitud al rango [-1, 1]
-            datos_amplitud /= np.max(np.abs(datos_amplitud))
-
-            # Convertir los datos de amplitud al formato adecuado para exportar a MP3
-            datos_amplitud_bytes = (datos_amplitud * (2 ** 15 - 1)).astype(np.int16).tobytes()
-
-            # Crear un objeto de audio a partir de los datos de amplitud y la frecuencia de muestreo
-            audio = AudioSegment(
-                data=datos_amplitud_bytes,
-                sample_width=2,  # Ancho de muestra en bytes
-                frame_rate=frecuencia_muestreo,
-                channels=1  # Número de canales (1 para mono, 2 para estéreo)
-            )
-
-            # Guardar el audio en formato MP3
-            audio.export("canciones/cancion_grabada.mp3", format="mp3")
+            # Guardar el audio en formato WAV en lugar de MP3
+            sf.write(archivo_audio, y_data, sample_rate, subtype='PCM_16')
 
 
             cancion1 = "canciones/pollitos2.mp3"
-            cancion2 = "canciones/cancion_grabada.mp3"
+            # cancion2 = "canciones/cancion_grabada.mp3"
 
-            porcentaje_total(cancion1, cancion2)
+            porcentaje_total(cancion1, archivo_audio)
 
     # Iniciar la grabación del audio utilizando el micrófono seleccionado
     stream = sd.InputStream(callback=audio_callback, device=mic_index, channels=1, samplerate=sample_rate)
