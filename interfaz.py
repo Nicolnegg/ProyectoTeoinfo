@@ -397,7 +397,7 @@ boton = ct.CTkButton(ventana, text="Inicia con tu intento",font=fuente_personali
 boton.grid(row=6, column=0,  padx=1, pady=4)
 
 # Crear y colocar el resto de los elementos utilizando grid
-notas1 = ct.CTkLabel(ventana, text="Notas de la cancion", font=fuente_notas, 
+notas1 = ct.CTkTextbox(ventana, font=fuente_notas, state="disabled",
     fg_color="#FFA4A4",    # Fuente blanca
     width=400,
     height=200,
