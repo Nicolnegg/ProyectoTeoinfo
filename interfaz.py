@@ -16,6 +16,7 @@ from pydub.playback import play
 from tkinter import ttk
 import customtkinter as ct
 import pygame
+from notas import detectar_notas
 
 # Obtener información sobre los dispositivos de audio disponibles
 devices = sd.query_devices()
@@ -29,7 +30,6 @@ duration = 1  # Duración de la grabación en segundos
 
 cancion_actual = None
 sonando = False
-paso =0
 
 # Obtener las dimensiones de la pantalla
 user32 = ctypes.windll.user32
@@ -47,6 +47,8 @@ ventana.configure(bg_color="white",fg_color="white")
 # Cargar la fuente utilizando el módulo font
 fuente_personalizada = ct.CTkFont(family="@DengXian", weight="normal", size=15)
 fuente_personalizada_bold = ct.CTkFont(family="@DengXian", weight="bold", size=15)
+
+fuente_notas = ct.CTkFont(family="@DengXian", weight="bold", size=30)
 
 
 marco_logo_titulo = ct.CTkFrame(ventana)
@@ -170,7 +172,7 @@ def porcentaje_total(cancion1, cancion2):
 
 
 def capture_audio(duration=10, sample_rate=44100, mic_index=1):
-    global x_data, y_data, current_time, samples_recorded
+    global x_data, y_data, current_time, samples_recorded,paso,paso_total
     # Configuración de la gráfica
     fig2.clear()
     ax = fig2.add_subplot(111)
@@ -197,7 +199,7 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
     # Función de animación para actualizar la gráfica en tiempo real
     def update_plot(frame):
-        global x_data, y_data
+        global x_data, y_data,paso,paso_total
         if (len(y_data) / sample_rate) < duration:
             line.set_data(x_data[:len(y_data)], y_data[:len(x_data)])  # Ajustar las longitudes de x_data y y_data
 
@@ -206,12 +208,13 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
         # Actualizar los límites del eje y
         max_amplitude = np.max(np.abs(y_data))
         ax.set_ylim(-max_amplitude, max_amplitude)
+        
         fig2.canvas.draw()
         return line,
 
     # Función de callback para capturar el audio
     def audio_callback(indata, frames, time, status):
-        global x_data, y_data, current_time, samples_recorded
+        global x_data, y_data, current_time, samples_recorded,paso,paso_total
         if status:
             print(status)
 
@@ -221,7 +224,10 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
             # Incrementar el contador de muestras grabadas
             samples_recorded += frames
+            progressbar.set((1*(len(y_data) / sample_rate)/duration) )
             
+            
+
         else:
         # Detener la grabación
             
@@ -288,8 +294,34 @@ def graficar_cancion():
     # Establecer los límites del eje x
     ax.set_xlim(0, duracion)
     progressbar.set(0)
-    paso = (duration/100)/100 # estableco el paso
     canvas.draw()
+    notas = detectar_notas(archivo_mp3)
+    notas1.configure(text= texto_notas(notas))
+
+def texto_notas(notas):
+    # Variable para realizar el seguimiento del contador
+    contador = 0
+
+    # Lista para almacenar los elementos con saltos de línea
+    elementos_con_saltos = []
+
+    # Recorrer la lista
+    for elemento in notas:
+        # Agregar el elemento al string
+        elementos_con_saltos.append(elemento)
+    
+        # Incrementar el contador
+        contador += 1
+    
+        # Verificar si se han procesado 6 elementos
+        if contador % 6 == 0:
+            # Agregar un salto de línea al string
+            elementos_con_saltos.append("\n")
+
+    # Convertir la lista en un solo string separado por espacios
+    resultado = " ".join(elementos_con_saltos)
+    return(resultado)
+
 
 def sonar_cancion():
     global sonando
@@ -371,6 +403,17 @@ boton = ct.CTkButton(ventana, text="Inicia con tu intento",font=fuente_personali
 )
 boton.grid(row=6, column=0,  padx=1, pady=4)
 
+# Crear y colocar el resto de los elementos utilizando grid
+notas1 = ct.CTkLabel(ventana, text="Notas de la cancion", font=fuente_notas, 
+    fg_color="#FFA4A4",    # Fuente blanca
+    width=400,
+    height=200,
+    corner_radius=10,
+    text_color="white",
+
+)
+notas1.grid(row=8, column=0, padx=1, pady=4)
+
 
 # Crear y colocar el resto de los elementos utilizando grid
 etiqueta = ct.CTkLabel(ventana, text="¡INTENTALO!", font=fuente_personalizada_bold, text_color="red")
@@ -411,6 +454,8 @@ total = ct.CTkLabel(ventana, text="TOTAL:", font=fuente_personalizada_bold,
 
 )
 total.grid(row=6, column=1,  padx=1, pady=4)
+
+
 
 
 ventana.mainloop()

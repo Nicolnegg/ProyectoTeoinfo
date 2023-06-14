@@ -29,13 +29,3 @@ def detectar_notas(cancion):
         notas_tocadas.append(nota)
     
     return notas_tocadas
-
-
-# Coloca el nombre de tu archivo de música aquí
-cancion_mp3 = "canciones/Pollitos2.mp3"
-
-notas_tocadas = detectar_notas(cancion_mp3)
-
-print("Notas detectadas:")
-for nota in notas_tocadas:
-    print(nota)
