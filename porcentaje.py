@@ -1,9 +1,7 @@
 import librosa
 import numpy as np
-import numpy as np
 from pydub import AudioSegment
 import scipy.io.wavfile as wav
-
 
 
 def calcular_similitud_correlacion(cancion1, cancion2):

@@ -88,6 +88,87 @@ current_time = 0
 # Variable para realizar el seguimiento del número de muestras grabadas
 samples_recorded = 0
 
+
+def calcular_similitud_correlacion(cancion1, cancion2):
+    audio2, sr2 = librosa.load(cancion2)
+    audio1, sr1 = librosa.load(cancion1, mono=True)
+
+    # Alinear las señales de audio si tienen diferentes longitudes
+    min_length = min(len(audio1), len(audio2))
+    audio1 = audio1[:min_length]
+    audio2 = audio2[:min_length]
+
+    # Calcular la correlación cruzada
+    correlacion = np.correlate(audio1, audio2, mode='full')
+
+    # Obtener el valor máximo de la correlación cruzada
+    max_correlacion = np.max(correlacion)
+
+    # Calcular el porcentaje de similitud normalizado
+    porcentaje_similitud = (max_correlacion / len(audio1)) * 100
+
+    print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
+
+def calcular_porcentaje_similitud(cancion1, cancion2):
+    # Cargar la canción 2 con librosa
+    audio2, sr2 = librosa.load(cancion2)
+
+    # Cargar la canción 1 con librosa y convertirla a mono
+    audio1, sr1 = librosa.load(cancion1, mono=True)
+
+    # Alinear las longitudes de las señales de audio
+    min_len = min(len(audio1), len(audio2))
+    audio1 = audio1[:min_len]
+    audio2 = audio2[:min_len]
+
+    # Aplicar la transformada de Fourier a las señales de audio
+    fft1 = np.fft.fft(audio1)
+    fft2 = np.fft.fft(audio2)
+
+    # Calcular las magnitudes de las frecuencias
+    magnitudes1 = np.abs(fft1)
+    magnitudes2 = np.abs(fft2)
+
+    # Normalizar las magnitudes
+    magnitudes1 /= np.max(magnitudes1)
+    magnitudes2 /= np.max(magnitudes2)
+
+    # Calcular la similitud basada en las magnitudes de las frecuencias
+    distancia = np.linalg.norm(magnitudes1 - magnitudes2)
+    max_distancia = np.linalg.norm(np.ones_like(magnitudes1))
+    porcentaje_similitud = (1 - distancia / max_distancia) * 100
+
+
+    print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
+
+
+def porcentaje_total(cancion1, cancion2):
+    # Cargar las canciones con librosa
+    audio1, sr1 = librosa.load(cancion1)
+    audio2, sr2 = librosa.load(cancion2)
+
+    # Preprocesamiento si es necesario
+
+    # Extraer características musicales relevantes
+    caracteristicas1 = librosa.feature.chroma_cqt(y=audio1, sr=sr1)
+    caracteristicas2 = librosa.feature.chroma_cqt(y=audio2, sr=sr2)
+
+    # Calcular la distancia entre las características
+    num_columnas = min(caracteristicas1.shape[1], caracteristicas2.shape[1])
+    distancia = np.linalg.norm(caracteristicas1[:, :num_columnas] - caracteristicas2[:, :num_columnas])
+
+    # Calcular el porcentaje de similitud
+    max_distancia = np.linalg.norm(np.ones_like(caracteristicas1[:, :num_columnas]))
+    porcentaje_similitud = (1 - distancia / max_distancia) * 100
+
+    # Mostrar el resultado
+    print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
+
+
+
+
+
+
 def capture_audio(duration=10, sample_rate=44100, mic_index=1):
     global x_data, y_data, current_time, samples_recorded
     # Configuración de la gráfica
@@ -156,7 +237,10 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
 
 
             cancion1 = "canciones/pollitos2.mp3"
-            # cancion2 = "canciones/cancion_grabada.mp3"
+            cancion2 = "canciones/cancion_grabada.mp3"
+            porcentaje_total(cancion1,cancion2)
+            calcular_porcentaje_similitud(cancion1,cancion2)
+            calcular_similitud_correlacion(cancion1,cancion2)
 
 
     # Iniciar la grabación del audio utilizando el micrófono seleccionado
