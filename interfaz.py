@@ -161,7 +161,7 @@ def porcentaje_total(cancion1, cancion2):
     porcentaje_similitud = (1 - distancia / max_distancia) * 100
 
     # Mostrar el resultado
-    print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
+    return ( porcentaje_similitud)
 
 
 
@@ -239,14 +239,14 @@ def capture_audio(duration=10, sample_rate=44100, mic_index=1):
             sf.write(archivo_audio, y_data, sample_rate, subtype='PCM_16')
 
             notas_usuario = detectar_notas("canciones/cancion_grabada.wav")
-            notas1.configure(state="normal")
-            notas1.insert("0.0",text= texto_notas(notas_usuario))
-            notas1.configure(state="disable")
+            notas2.configure(state="normal")
+            notas2.insert("0.0",text= texto_notas(notas_usuario))
+            notas2.configure(state="disable")
 
 
             cancion1 = "canciones/pollitos2.mp3"
             cancion2 = "canciones/cancion_grabada.wav"
-            porcentaje_total(cancion1,cancion2)
+            total.configure(text=" TOTAL: " + str(porcentaje_total(cancion1,cancion2)) + " %")
             calcular_porcentaje_similitud(cancion1,cancion2)
 
             
