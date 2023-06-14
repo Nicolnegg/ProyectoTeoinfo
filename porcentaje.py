@@ -1,8 +1,53 @@
 import librosa
 import numpy as np
+import numpy as np
+from pydub import AudioSegment
+import scipy.io.wavfile as wav
 
-cancion1 = "canciones/cancion1.mp3"
-cancion2 = "canciones/cancion2.mp3"
+import numpy as np
+import librosa
+
+import numpy as np
+import librosa
+
+
+def calcular_porcentaje_similitud(cancion1, cancion2):
+    # Cargar la canción 2 con librosa
+    audio2, sr2 = librosa.load(cancion2)
+
+    # Cargar la canción 1 con librosa y convertirla a mono
+    audio1, sr1 = librosa.load(cancion1, mono=True)
+
+    # Alinear las longitudes de las señales de audio
+    min_len = min(len(audio1), len(audio2))
+    audio1 = audio1[:min_len]
+    audio2 = audio2[:min_len]
+
+    # Aplicar la transformada de Fourier a las señales de audio
+    fft1 = np.fft.fft(audio1)
+    fft2 = np.fft.fft(audio2)
+
+    # Calcular las magnitudes de las frecuencias
+    magnitudes1 = np.abs(fft1)
+    magnitudes2 = np.abs(fft2)
+
+    # Normalizar las magnitudes
+    magnitudes1 /= np.max(magnitudes1)
+    magnitudes2 /= np.max(magnitudes2)
+
+    # Calcular la similitud basada en las magnitudes de las frecuencias
+    distancia = np.linalg.norm(magnitudes1 - magnitudes2)
+    max_distancia = np.linalg.norm(np.ones_like(magnitudes1))
+    porcentaje_similitud = (1 - distancia / max_distancia) * 100
+
+
+    print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
+
+
+cancion1 = "canciones/pollitos2.mp3"
+cancion2 = "canciones/cancion_grabada.wav"
+
+calcular_porcentaje_similitud(cancion1, cancion2)
 
 def porcentaje_total(cancion1, cancion2):
     # Cargar las canciones con librosa
@@ -63,9 +108,5 @@ def comparar_canciones_intervalo(cancion1, cancion2, duracion_intervalo):
         else:
             print(f"Intervalo {i+1}: No hay similitud.")
 
-# Ejemplo de uso
-cancion1 = "canciones/cancion1.mp3"
-cancion2 = "canciones/cancion2.mp3"
-# duracion_intervalo = 3 # Duración del intervalo en segundos
 
 
