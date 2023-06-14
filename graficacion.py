@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Cargar la canción de piano
-song, sr = librosa.load('canciones/cancion1.mp3')
+song, sr = librosa.load('canciones/Pollitos.mp3')
 
 # Convertir la señal de audio a mono
 song_mono = librosa.to_mono(song)
@@ -25,13 +25,15 @@ note_frequencies = librosa.midi_to_hz(note_midi)
 frequencies_resized = np.resize(frequencies, len(note_frequencies))
 
 # Encontrar los picos de frecuencia
-peak_indices = librosa.util.peak_pick(magnitude, pre_max=20, post_max=20, pre_avg=50, post_avg=50, delta=0.5, wait=0)
+peak_indices = librosa.util.peak_pick(magnitude, pre_max=10, post_max=10, pre_avg=30, post_avg=50, delta=0.2, wait=0)
+print(peak_indices)
 
 notes_detected = []
 for peak_index in peak_indices:
     if peak_index >= len(frequencies_resized):
-        continue
-    closest_note = note_names[np.argmin(np.abs(note_frequencies - frequencies_resized[peak_index]))]
-    notes_detected.append(closest_note)
+        print("peak_index fuera de límites:", len(frequencies_resized), peak_index)
+        print("aca")
+        closest_note = note_names[np.argmin(np.abs(note_frequencies - frequencies_resized[peak_index]))]
+        notes_detected.append(closest_note)
 
 print("Notas detectadas:", notes_detected)
