@@ -4,26 +4,6 @@ from pydub import AudioSegment
 import scipy.io.wavfile as wav
 
 
-def calcular_similitud_correlacion(cancion1, cancion2):
-    audio2, sr2 = librosa.load(cancion2)
-    audio1, sr1 = librosa.load(cancion1, mono=True)
-
-    # Alinear las señales de audio si tienen diferentes longitudes
-    min_length = min(len(audio1), len(audio2))
-    audio1 = audio1[:min_length]
-    audio2 = audio2[:min_length]
-
-    # Calcular la correlación cruzada
-    correlacion = np.correlate(audio1, audio2, mode='full')
-
-    # Obtener el valor máximo de la correlación cruzada
-    max_correlacion = np.max(correlacion)
-
-    # Calcular el porcentaje de similitud normalizado
-    porcentaje_similitud = (max_correlacion / len(audio1)) * 100
-
-    print(f"El porcentaje de similitud entre las canciones es: {porcentaje_similitud}%")
-
 def calcular_porcentaje_similitud(cancion1, cancion2):
     # Cargar la canción 2 con librosa
     audio2, sr2 = librosa.load(cancion2)
