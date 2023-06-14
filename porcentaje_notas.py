@@ -16,12 +16,6 @@ def calcular_similitud(notas1, notas2):
     # Calcular el porcentaje de similitud como el cociente entre la longitud de la secuencia común
     # más larga y la longitud de la lista más larga
     porcentaje_similitud = (matriz[m][n] / min(m, n)) * 100
-    if (porcentaje_similitud>80):
-        porcentaje_similitud = porcentaje_similitud + 10
-    if (porcentaje_similitud>70):
-        porcentaje_similitud = porcentaje_similitud + 10
-    if porcentaje_similitud >=100:
-        porcentaje_similitud= 100
     return porcentaje_similitud
 
 # Ejemplo de uso
