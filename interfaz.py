@@ -18,6 +18,8 @@ import customtkinter as ct
 import pygame
 from notas import detectar_notas
 
+
+
 # Obtener información sobre los dispositivos de audio disponibles
 devices = sd.query_devices()
 print(devices)  # Imprimir información sobre los dispositivos
